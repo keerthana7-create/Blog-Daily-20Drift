@@ -1,5 +1,14 @@
 import { RequestHandler } from "express";
 
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -11,6 +20,9 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   state: "draft" | "published";
+  likes: string[];
+  bookmarks: string[];
+  comments: Comment[];
 }
 
 interface Author {
@@ -47,12 +59,15 @@ function generatePosts(count = 24): Post[] {
       createdAt,
       updatedAt: createdAt,
       state: "published",
+      likes: [],
+      bookmarks: [],
+      comments: [],
     });
   }
   return out;
 }
 
-const DB: { posts: Post[] } = { posts: generatePosts() };
+const DB: { posts: Post[]; subscriptions: { email: string; createdAt: string }[] } = { posts: generatePosts(), subscriptions: [] };
 
 function currentUserId(req: any) {
   return (req.headers["x-user-id"] as string) || "u1";
@@ -89,6 +104,61 @@ export const getPost: RequestHandler = (req, res) => {
   const found = DB.posts.find((p) => p.id === id);
   if (!found) return res.status(404).json({ message: "Not Found" });
   res.json(found);
+};
+
+export const toggleLike: RequestHandler = (req, res) => {
+  const { id } = req.params;
+  const userId = currentUserId(req);
+  const post = DB.posts.find((p) => p.id === id);
+  if (!post) return res.status(404).json({ message: "Not Found" });
+  const idx = post.likes.indexOf(userId);
+  if (idx === -1) post.likes.push(userId);
+  else post.likes.splice(idx, 1);
+  res.json(post);
+};
+
+export const toggleBookmark: RequestHandler = (req, res) => {
+  const { id } = req.params;
+  const userId = currentUserId(req);
+  const post = DB.posts.find((p) => p.id === id);
+  if (!post) return res.status(404).json({ message: "Not Found" });
+  const idx = post.bookmarks.indexOf(userId);
+  if (idx === -1) post.bookmarks.push(userId);
+  else post.bookmarks.splice(idx, 1);
+  res.json(post);
+};
+
+export const addComment: RequestHandler = (req, res) => {
+  const { id } = req.params;
+  const userId = currentUserId(req);
+  const post = DB.posts.find((p) => p.id === id);
+  if (!post) return res.status(404).json({ message: "Not Found" });
+  const text = String(req.body?.text || "").trim();
+  if (!text) return res.status(400).json({ message: "text required" });
+  const comment: Comment = {
+    id: `c${Date.now()}`,
+    userId,
+    userName: authors.find((a) => a.id === userId)?.name || "User",
+    userAvatar: authors.find((a) => a.id === userId)?.avatarUrl || "https://i.pravatar.cc/80",
+    text,
+    createdAt: new Date().toISOString(),
+  };
+  post.comments.push(comment);
+  res.status(201).json(comment);
+};
+
+export const getTags: RequestHandler = (_req, res) => {
+  const counts = new Map<string, number>();
+  for (const p of DB.posts) for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1);
+  const items = Array.from(counts.entries()).map(([tag, count]) => ({ tag, count }));
+  res.json({ items });
+};
+
+export const subscribe: RequestHandler = (req, res) => {
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "invalid email" });
+  DB.subscriptions.push({ email, createdAt: new Date().toISOString() });
+  res.status(201).json({ ok: true });
 };
 
 export const createPost: RequestHandler = (req, res) => {
