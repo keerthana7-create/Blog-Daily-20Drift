@@ -9,9 +9,13 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, status, total, page, limit } = useSelector((s: RootState) => s.posts);
+  const { items, status, total, page, limit } = useSelector(
+    (s: RootState) => s.posts,
+  );
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedTag, setSelectedTag] = useState<string | null>(searchParams.get("tag"));
+  const [selectedTag, setSelectedTag] = useState<string | null>(
+    searchParams.get("tag"),
+  );
   const q = searchParams.get("q") || undefined;
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
@@ -19,7 +23,9 @@ export default function Home() {
   useEffect(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
     dispatch(setPage(Number.isFinite(p) ? p : 1));
-    dispatch(fetchPosts({ page: p, limit, search: q, tag: selectedTag || undefined }));
+    dispatch(
+      fetchPosts({ page: p, limit, search: q, tag: selectedTag || undefined }),
+    );
   }, [dispatch, searchParams, q, selectedTag, limit]);
 
   const tags = useMemo(() => {
@@ -35,7 +41,14 @@ export default function Home() {
       return prev;
     });
     dispatch(setPage(clamped));
-    dispatch(fetchPosts({ page: clamped, limit, search: q, tag: selectedTag || undefined }));
+    dispatch(
+      fetchPosts({
+        page: clamped,
+        limit,
+        search: q,
+        tag: selectedTag || undefined,
+      }),
+    );
   };
 
   return (
@@ -44,14 +57,31 @@ export default function Home() {
       <main className="container mx-auto px-4 py-10 flex-1">
         <section className="mb-8 grid gap-6 md:grid-cols-[1.3fr,1fr] items-center">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Insights, Stories, and Guides</h1>
-            <p className="mt-2 text-muted-foreground max-w-2xl">A modern, responsive blog platform built with React and Redux Toolkit. Explore trending topics and dive into thoughtful articles.</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+              Insights, Stories, and Guides
+            </h1>
+            <p className="mt-2 text-muted-foreground max-w-2xl">
+              A modern, responsive blog platform built with React and Redux
+              Toolkit. Explore trending topics and dive into thoughtful
+              articles.
+            </p>
             <div className="mt-4 flex gap-2">
-              <a href="/editor" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">Start Writing</a>
-              <a href="#feed" className="rounded-md border px-4 py-2 text-sm">Explore</a>
+              <a
+                href="/editor"
+                className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold"
+              >
+                Start Writing
+              </a>
+              <a href="#feed" className="rounded-md border px-4 py-2 text-sm">
+                Explore
+              </a>
             </div>
           </div>
-          <img src="https://cdn.builder.io/api/v1/image/assets%2Fa7c06777e3d7449195ec2c3ed270e026%2F9fff7e8d28d543ac901914458ddedee2?format=webp&width=800" alt="Hero visual" className="w-full rounded-2xl border shadow-sm" />
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2Fa7c06777e3d7449195ec2c3ed270e026%2F9fff7e8d28d543ac901914458ddedee2?format=webp&width=800"
+            alt="Hero visual"
+            className="w-full rounded-2xl border shadow-sm"
+          />
         </section>
 
         <section className="mb-6">
@@ -89,10 +119,14 @@ export default function Home() {
         </section>
 
         {status === "loading" && (
-          <div className="grid place-items-center py-20 text-muted-foreground">Loading posts…</div>
+          <div className="grid place-items-center py-20 text-muted-foreground">
+            Loading posts…
+          </div>
         )}
         {status === "failed" && (
-          <div className="grid place-items-center py-20 text-red-600">Failed to load posts.</div>
+          <div className="grid place-items-center py-20 text-red-600">
+            Failed to load posts.
+          </div>
         )}
         {status === "idle" && (
           <section id="feed">
@@ -103,9 +137,23 @@ export default function Home() {
             </div>
 
             <div className="mt-8 flex items-center justify-center gap-2">
-              <button onClick={() => onPageChange(page - 1)} disabled={page <= 1} className="rounded-md border px-3 py-2 text-sm disabled:opacity-50">Prev</button>
-              <span className="text-sm">Page {page} of {totalPages}</span>
-              <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-2 text-sm disabled:opacity-50">Next</button>
+              <button
+                onClick={() => onPageChange(page - 1)}
+                disabled={page <= 1}
+                className="rounded-md border px-3 py-2 text-sm disabled:opacity-50"
+              >
+                Prev
+              </button>
+              <span className="text-sm">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => onPageChange(page + 1)}
+                disabled={page >= totalPages}
+                className="rounded-md border px-3 py-2 text-sm disabled:opacity-50"
+              >
+                Next
+              </button>
             </div>
           </section>
         )}

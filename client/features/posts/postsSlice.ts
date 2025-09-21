@@ -64,45 +64,85 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (params: FetchParams | undefined) => {
     const { data } = await api.get("/posts", { params });
-    return data as { items: Post[]; total: number; page: number; limit: number };
-  }
+    return data as {
+      items: Post[];
+      total: number;
+      page: number;
+      limit: number;
+    };
+  },
 );
 
-export const fetchPostById = createAsyncThunk("posts/fetchPostById", async (id: string) => {
-  const { data } = await api.get(`/posts/${id}`);
-  return data as Post;
-});
+export const fetchPostById = createAsyncThunk(
+  "posts/fetchPostById",
+  async (id: string) => {
+    const { data } = await api.get(`/posts/${id}`);
+    return data as Post;
+  },
+);
 
-export const createPost = createAsyncThunk("posts/createPost", async (payload: UpsertPostPayload) => {
-  const { data } = await api.post("/posts", payload, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const createPost = createAsyncThunk(
+  "posts/createPost",
+  async (payload: UpsertPostPayload) => {
+    const { data } = await api.post("/posts", payload, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const updatePost = createAsyncThunk("posts/updatePost", async (payload: UpsertPostPayload & { id: string }) => {
-  const { id, ...body } = payload;
-  const { data } = await api.put(`/posts/${id}`, body, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const updatePost = createAsyncThunk(
+  "posts/updatePost",
+  async (payload: UpsertPostPayload & { id: string }) => {
+    const { id, ...body } = payload;
+    const { data } = await api.put(`/posts/${id}`, body, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const deletePost = createAsyncThunk("posts/deletePost", async (id: string) => {
-  const { data } = await api.delete(`/posts/${id}`, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (id: string) => {
+    const { data } = await api.delete(`/posts/${id}`, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const toggleLike = createAsyncThunk("posts/toggleLike", async (id: string) => {
-  const { data } = await api.post(`/posts/${id}/like`, undefined, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const toggleLike = createAsyncThunk(
+  "posts/toggleLike",
+  async (id: string) => {
+    const { data } = await api.post(`/posts/${id}/like`, undefined, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const toggleBookmark = createAsyncThunk("posts/toggleBookmark", async (id: string) => {
-  const { data } = await api.post(`/posts/${id}/bookmark`, undefined, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const toggleBookmark = createAsyncThunk(
+  "posts/toggleBookmark",
+  async (id: string) => {
+    const { data } = await api.post(`/posts/${id}/bookmark`, undefined, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const addComment = createAsyncThunk("posts/addComment", async (payload: { id: string; text: string }) => {
-  const { data } = await api.post(`/posts/${payload.id}/comments`, { text: payload.text }, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return { id: payload.id, comment: data as Comment };
-});
+export const addComment = createAsyncThunk(
+  "posts/addComment",
+  async (payload: { id: string; text: string }) => {
+    const { data } = await api.post(
+      `/posts/${payload.id}/comments`,
+      { text: payload.text },
+      { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } },
+    );
+    return { id: payload.id, comment: data as Comment };
+  },
+);
 
 const postsSlice = createSlice({
   name: "posts",

@@ -11,6 +11,7 @@ export function ensureCurrentUser() {
     id,
     name: localStorage.getItem("user_name") || "Alex Rivera",
     email: localStorage.getItem("user_email") || "alex@example.com",
-    avatarUrl: localStorage.getItem("user_avatar") || "https://i.pravatar.cc/80?img=1",
+    avatarUrl:
+      localStorage.getItem("user_avatar") || "https://i.pravatar.cc/80?img=1",
   };
 }

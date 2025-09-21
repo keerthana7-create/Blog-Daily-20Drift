@@ -23,18 +23,20 @@ export const login = createAsyncThunk(
   "auth/login",
   async (payload: { email: string; password: string }) => {
     const { data } = await api.post("/auth/login", payload);
-    if (data?.accessToken) localStorage.setItem("access_token", data.accessToken);
+    if (data?.accessToken)
+      localStorage.setItem("access_token", data.accessToken);
     return data.user as User;
-  }
+  },
 );
 
 export const register = createAsyncThunk(
   "auth/register",
   async (payload: { name: string; email: string; password: string }) => {
     const { data } = await api.post("/auth/register", payload);
-    if (data?.accessToken) localStorage.setItem("access_token", data.accessToken);
+    if (data?.accessToken)
+      localStorage.setItem("access_token", data.accessToken);
     return data.user as User;
-  }
+  },
 );
 
 export const logout = createAsyncThunk("auth/logout", async () => {
