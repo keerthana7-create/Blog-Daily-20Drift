@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { listPosts, getPost, createPost, updatePost, deletePost, getAuthor } from "./routes/posts";
+import { listPosts, getPost, createPost, updatePost, deletePost, getAuthor, toggleLike, toggleBookmark, addComment, getTags, subscribe } from "./routes/posts";
 
 export function createServer() {
   const app = express();
@@ -26,6 +26,11 @@ export function createServer() {
   app.post("/api/posts", createPost);
   app.put("/api/posts/:id", updatePost);
   app.delete("/api/posts/:id", deletePost);
+  app.post("/api/posts/:id/like", toggleLike);
+  app.post("/api/posts/:id/bookmark", toggleBookmark);
+  app.post("/api/posts/:id/comments", addComment);
+  app.get("/api/tags", getTags);
+  app.post("/api/subscribe", subscribe);
   app.get("/api/authors/:id", getAuthor);
 
   return app;
