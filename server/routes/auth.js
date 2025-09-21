@@ -4,47 +4,37 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// Signup Page
-router.get("/signup", (req, res) => {
-  res.render("signup");
-});
-
-// Signup Handler
+// Signup
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
-    req.session.user = user;
-    res.redirect("/");
+    req.session.user = { id: user._id, username: user.username };
+    res.status(201).json({ message: "Signup successful", user: req.session.user });
   } catch (err) {
-    res.status(500).send("Signup failed: " + err.message);
+    res.status(500).json({ error: "Signup failed", details: err.message });
   }
 });
 
-// Login Page
-router.get("/login", (req, res) => {
-  res.render("login");
-});
-
-// Login Handler
+// Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) return res.status(400).send("Invalid credentials");
+  if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).send("Invalid credentials");
+  if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-  req.session.user = user;
-  res.redirect("/");
+  req.session.user = { id: user._id, username: user.username };
+  res.json({ message: "Login successful", user: req.session.user });
 });
 
 // Logout
-router.get("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/auth/login");
+    res.json({ message: "Logged out successfully" });
   });
 });
 
