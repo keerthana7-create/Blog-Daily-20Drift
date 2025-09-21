@@ -8,15 +8,35 @@ import { store } from "./store";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PostDetail from "./pages/PostDetail";
+import Editor from "./pages/Editor";
+import Profile from "./pages/Profile";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "./features/auth/authSlice";
+import { ensureCurrentUser } from "./utils/currentUser";
+
+function Bootstrap() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const user = ensureCurrentUser();
+    dispatch(setUser(user as any));
+  }, [dispatch]);
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/post/:id" element={<PostDetail />} />
+      <Route path="/editor" element={<Editor />} />
+      <Route path="/editor/:id" element={<Editor />} />
+      <Route path="/profile/:id" element={<Profile />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
 const App = () => (
   <Provider store={store}>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/post/:id" element={<PostDetail />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Bootstrap />
     </BrowserRouter>
   </Provider>
 );
