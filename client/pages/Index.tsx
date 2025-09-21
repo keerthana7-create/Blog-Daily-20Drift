@@ -1,62 +1,109 @@
-import { DemoResponse } from "@shared/api";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { fetchPosts, setPage } from "@/features/posts/postsSlice";
+import PostCard from "@/components/PostCard";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useSearchParams } from "react-router-dom";
 
-export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
+export default function Home() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, total, page, limit } = useSelector((s: RootState) => s.posts);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedTag, setSelectedTag] = useState<string | null>(searchParams.get("tag"));
+  const q = searchParams.get("q") || undefined;
+
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
   useEffect(() => {
-    fetchDemo();
-  }, []);
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    dispatch(setPage(Number.isFinite(p) ? p : 1));
+    dispatch(fetchPosts({ page: p, limit, search: q, tag: selectedTag || undefined }));
+  }, [dispatch, searchParams, q, selectedTag, limit]);
 
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
+  const tags = useMemo(() => {
+    const set = new Set<string>();
+    items.forEach((p) => p.tags.forEach((t) => set.add(t)));
+    return Array.from(set).slice(0, 12);
+  }, [items]);
+
+  const onPageChange = (next: number) => {
+    const clamped = Math.min(Math.max(1, next), totalPages);
+    setSearchParams((prev) => {
+      prev.set("page", String(clamped));
+      return prev;
+    });
+    dispatch(setPage(clamped));
+    dispatch(fetchPosts({ page: clamped, limit, search: q, tag: selectedTag || undefined }));
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
-        </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="container mx-auto px-4 py-10 flex-1">
+        <section className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Insights, Stories, and Guides</h1>
+          <p className="mt-2 text-muted-foreground max-w-2xl">A modern, responsive blog platform built with React and Redux Toolkit. Explore trending topics and dive into thoughtful articles.</p>
+        </section>
+
+        <section className="mb-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                setSelectedTag(null);
+                setSearchParams((prev) => {
+                  prev.delete("tag");
+                  prev.set("page", "1");
+                  return prev;
+                });
+              }}
+              className={`rounded-full border px-3 py-1 text-sm ${!selectedTag ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}
+            >
+              All
+            </button>
+            {tags.map((t) => (
+              <button
+                key={t}
+                onClick={() => {
+                  setSelectedTag(t);
+                  setSearchParams((prev) => {
+                    prev.set("tag", t);
+                    prev.set("page", "1");
+                    return prev;
+                  });
+                }}
+                className={`rounded-full border px-3 py-1 text-sm ${selectedTag === t ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}
+              >
+                #{t}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {status === "loading" && (
+          <div className="grid place-items-center py-20 text-muted-foreground">Loading posts…</div>
+        )}
+        {status === "failed" && (
+          <div className="grid place-items-center py-20 text-red-600">Failed to load posts.</div>
+        )}
+        {status === "idle" && (
+          <section>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {items.map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <button onClick={() => onPageChange(page - 1)} disabled={page <= 1} className="rounded-md border px-3 py-2 text-sm disabled:opacity-50">Prev</button>
+              <span className="text-sm">Page {page} of {totalPages}</span>
+              <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-2 text-sm disabled:opacity-50">Next</button>
+            </div>
+          </section>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 }
