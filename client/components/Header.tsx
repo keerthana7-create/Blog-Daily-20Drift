@@ -29,7 +29,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-2 font-extrabold text-xl tracking-tight">
           <span className="inline-block h-6 w-6 rounded bg-primary"></span>
-          Aurora Blog
+          Blog-Daily Drift
         </Link>
         <form onSubmit={onSubmit} className="hidden md:flex items-center gap-2 w-full max-w-md">
           <input
