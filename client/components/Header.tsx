@@ -42,6 +42,8 @@ export default function Header() {
           <button className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold hover:opacity-90 transition">Search</button>
         </form>
         <div className="flex items-center gap-3">
+          <Link to="/editor" className="hidden sm:inline-flex rounded-md border px-3 py-2 text-sm hover:bg-accent">New Post</Link>
+          <Link to={`/profile/${localStorage.getItem("user_id") || "u1"}`} className="hidden sm:inline-flex rounded-full border px-3 py-2 text-sm">My Profile</Link>
           <ThemeToggle />
         </div>
       </div>
