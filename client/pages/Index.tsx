@@ -42,9 +42,16 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="container mx-auto px-4 py-10 flex-1">
-        <section className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Insights, Stories, and Guides</h1>
-          <p className="mt-2 text-muted-foreground max-w-2xl">A modern, responsive blog platform built with React and Redux Toolkit. Explore trending topics and dive into thoughtful articles.</p>
+        <section className="mb-8 grid gap-6 md:grid-cols-[1.3fr,1fr] items-center">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Insights, Stories, and Guides</h1>
+            <p className="mt-2 text-muted-foreground max-w-2xl">A modern, responsive blog platform built with React and Redux Toolkit. Explore trending topics and dive into thoughtful articles.</p>
+            <div className="mt-4 flex gap-2">
+              <a href="/editor" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">Start Writing</a>
+              <a href="#feed" className="rounded-md border px-4 py-2 text-sm">Explore</a>
+            </div>
+          </div>
+          <img src="https://cdn.builder.io/api/v1/image/assets%2Fa7c06777e3d7449195ec2c3ed270e026%2F9fff7e8d28d543ac901914458ddedee2?format=webp&width=800" alt="Hero visual" className="w-full rounded-2xl border shadow-sm" />
         </section>
 
         <section className="mb-6">
@@ -88,7 +95,7 @@ export default function Home() {
           <div className="grid place-items-center py-20 text-red-600">Failed to load posts.</div>
         )}
         {status === "idle" && (
-          <section>
+          <section id="feed">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((p) => (
                 <PostCard key={p.id} post={p} />
