@@ -26,7 +26,11 @@ export default function PostCard({ post }: { post: Post }) {
         <p className="mt-2 text-sm text-muted-foreground">{excerpt}</p>
         <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <span>By {post.authorName}</span>
-          <time dateTime={post.createdAt}>{date}</time>
+          <div className="flex items-center gap-3">
+            <span aria-label="likes">❤ {post.likes?.length ?? 0}</span>
+            <span aria-label="bookmarks">🔖 {post.bookmarks?.length ?? 0}</span>
+            <time dateTime={post.createdAt}>{date}</time>
+          </div>
         </div>
       </div>
     </article>
