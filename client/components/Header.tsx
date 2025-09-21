@@ -31,6 +31,12 @@ export default function Header() {
           <span className="inline-block h-6 w-6 rounded bg-primary"></span>
           Blog-Daily Drift
         </Link>
+        <nav className="hidden md:flex items-center gap-4 text-sm">
+          <Link to="/">Home</Link>
+          <Link to="/categories">Categories</Link>
+          <Link to="/subscribe">Subscribe</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
         <form onSubmit={onSubmit} className="hidden md:flex items-center gap-2 w-full max-w-md">
           <input
             aria-label="Search posts"
