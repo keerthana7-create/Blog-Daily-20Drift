@@ -10,6 +10,9 @@ import NotFound from "./pages/NotFound";
 import PostDetail from "./pages/PostDetail";
 import Editor from "./pages/Editor";
 import Profile from "./pages/Profile";
+import Categories from "./pages/Categories";
+import Contact from "./pages/Contact";
+import Subscribe from "./pages/Subscribe";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "./features/auth/authSlice";
@@ -28,6 +31,9 @@ function Bootstrap() {
       <Route path="/editor" element={<Editor />} />
       <Route path="/editor/:id" element={<Editor />} />
       <Route path="/profile/:id" element={<Profile />} />
+      <Route path="/categories" element={<Categories />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/subscribe" element={<Subscribe />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

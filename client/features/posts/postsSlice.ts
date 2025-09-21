@@ -1,6 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import api from "@/utils/api";
 
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -12,6 +21,9 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   state: "draft" | "published";
+  likes: string[];
+  bookmarks: string[];
+  comments: Comment[];
 }
 
 export interface FetchParams {
@@ -52,30 +64,85 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (params: FetchParams | undefined) => {
     const { data } = await api.get("/posts", { params });
-    return data as { items: Post[]; total: number; page: number; limit: number };
-  }
+    return data as {
+      items: Post[];
+      total: number;
+      page: number;
+      limit: number;
+    };
+  },
 );
 
-export const fetchPostById = createAsyncThunk("posts/fetchPostById", async (id: string) => {
-  const { data } = await api.get(`/posts/${id}`);
-  return data as Post;
-});
+export const fetchPostById = createAsyncThunk(
+  "posts/fetchPostById",
+  async (id: string) => {
+    const { data } = await api.get(`/posts/${id}`);
+    return data as Post;
+  },
+);
 
-export const createPost = createAsyncThunk("posts/createPost", async (payload: UpsertPostPayload) => {
-  const { data } = await api.post("/posts", payload, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const createPost = createAsyncThunk(
+  "posts/createPost",
+  async (payload: UpsertPostPayload) => {
+    const { data } = await api.post("/posts", payload, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const updatePost = createAsyncThunk("posts/updatePost", async (payload: UpsertPostPayload & { id: string }) => {
-  const { id, ...body } = payload;
-  const { data } = await api.put(`/posts/${id}`, body, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const updatePost = createAsyncThunk(
+  "posts/updatePost",
+  async (payload: UpsertPostPayload & { id: string }) => {
+    const { id, ...body } = payload;
+    const { data } = await api.put(`/posts/${id}`, body, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
 
-export const deletePost = createAsyncThunk("posts/deletePost", async (id: string) => {
-  const { data } = await api.delete(`/posts/${id}`, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
-  return data as Post;
-});
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (id: string) => {
+    const { data } = await api.delete(`/posts/${id}`, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
+
+export const toggleLike = createAsyncThunk(
+  "posts/toggleLike",
+  async (id: string) => {
+    const { data } = await api.post(`/posts/${id}/like`, undefined, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
+
+export const toggleBookmark = createAsyncThunk(
+  "posts/toggleBookmark",
+  async (id: string) => {
+    const { data } = await api.post(`/posts/${id}/bookmark`, undefined, {
+      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+    });
+    return data as Post;
+  },
+);
+
+export const addComment = createAsyncThunk(
+  "posts/addComment",
+  async (payload: { id: string; text: string }) => {
+    const { data } = await api.post(
+      `/posts/${payload.id}/comments`,
+      { text: payload.text },
+      { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } },
+    );
+    return { id: payload.id, comment: data as Comment };
+  },
+);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -105,6 +172,11 @@ const postsSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+      .addCase(fetchPostById.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((p) => p.id === action.payload.id);
+        if (idx === -1) state.items.unshift(action.payload);
+        else state.items[idx] = action.payload;
+      })
       .addCase(createPost.fulfilled, (state, action) => {
         state.items.unshift(action.payload);
         state.total += 1;
@@ -116,6 +188,18 @@ const postsSlice = createSlice({
       .addCase(deletePost.fulfilled, (state, action) => {
         state.items = state.items.filter((p) => p.id !== action.payload.id);
         state.total = Math.max(0, state.total - 1);
+      })
+      .addCase(toggleLike.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((p) => p.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      })
+      .addCase(toggleBookmark.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((p) => p.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        const post = state.items.find((p) => p.id === action.payload.id);
+        if (post) post.comments.push(action.payload.comment);
       });
   },
 });

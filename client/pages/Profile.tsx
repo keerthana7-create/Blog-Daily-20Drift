@@ -20,7 +20,9 @@ export default function Profile() {
   const { id } = useParams<{ id: string }>();
   const [author, setAuthor] = useState<AuthorResponse | null>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const posts = useSelector((s: RootState) => s.posts.items.filter((p) => p.authorId === id));
+  const posts = useSelector((s: RootState) =>
+    s.posts.items.filter((p) => p.authorId === id),
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -36,7 +38,11 @@ export default function Profile() {
       <main className="container mx-auto px-4 py-10 flex-1">
         <section className="mx-auto max-w-3xl">
           <div className="flex items-center gap-4">
-            <img className="h-16 w-16 rounded-full" src={author?.avatarUrl || "https://i.pravatar.cc/80"} alt="" />
+            <img
+              className="h-16 w-16 rounded-full"
+              src={author?.avatarUrl || "https://i.pravatar.cc/80"}
+              alt=""
+            />
             <div>
               <h1 className="text-2xl font-bold">{displayName}</h1>
               <p className="text-muted-foreground">{author?.bio || ""}</p>
