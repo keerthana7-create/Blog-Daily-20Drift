@@ -22,6 +22,15 @@ export interface FetchParams {
   author?: string;
 }
 
+export interface UpsertPostPayload {
+  id?: string;
+  title: string;
+  content: string;
+  tags: string[];
+  imageUrl?: string;
+  state?: "draft" | "published";
+}
+
 interface PostsState {
   items: Post[];
   total: number;
@@ -52,6 +61,22 @@ export const fetchPostById = createAsyncThunk("posts/fetchPostById", async (id: 
   return data as Post;
 });
 
+export const createPost = createAsyncThunk("posts/createPost", async (payload: UpsertPostPayload) => {
+  const { data } = await api.post("/posts", payload, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
+  return data as Post;
+});
+
+export const updatePost = createAsyncThunk("posts/updatePost", async (payload: UpsertPostPayload & { id: string }) => {
+  const { id, ...body } = payload;
+  const { data } = await api.put(`/posts/${id}`, body, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
+  return data as Post;
+});
+
+export const deletePost = createAsyncThunk("posts/deletePost", async (id: string) => {
+  const { data } = await api.delete(`/posts/${id}`, { headers: { "x-user-id": localStorage.getItem("user_id") || "u1" } });
+  return data as Post;
+});
+
 const postsSlice = createSlice({
   name: "posts",
   initialState,
@@ -79,6 +104,18 @@ const postsSlice = createSlice({
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.items.unshift(action.payload);
+        state.total += 1;
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((p) => p.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.items = state.items.filter((p) => p.id !== action.payload.id);
+        state.total = Math.max(0, state.total - 1);
       });
   },
 });
