@@ -132,6 +132,11 @@ const postsSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+      .addCase(fetchPostById.fulfilled, (state, action) => {
+        const idx = state.items.findIndex((p) => p.id === action.payload.id);
+        if (idx === -1) state.items.unshift(action.payload);
+        else state.items[idx] = action.payload;
+      })
       .addCase(createPost.fulfilled, (state, action) => {
         state.items.unshift(action.payload);
         state.total += 1;
