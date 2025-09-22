@@ -202,7 +202,9 @@ export const subscribe: RequestHandler = (req, res) => {
 
 export const createPost: RequestHandler = (req, res) => {
   const userId = currentUserId(req);
-  const userName = (req.headers["x-user-name"] as string) || (authors.find((a) => a.id === userId)?.name ?? "User");
+  const userName =
+    (req.headers["x-user-name"] as string) ||
+    (authors.find((a) => a.id === userId)?.name ?? "User");
   const { title, content, tags, imageUrl, state } = req.body || {};
   if (!title || !content)
     return res.status(400).json({ message: "title and content required" });

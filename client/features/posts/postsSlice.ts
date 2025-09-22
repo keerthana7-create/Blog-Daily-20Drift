@@ -88,7 +88,9 @@ export const createPost = createAsyncThunk(
       headers: {
         "x-user-id": localStorage.getItem("user_id") || "u1",
         "x-user-name": localStorage.getItem("user_name") || "Alex Rivera",
-        "x-user-avatar": localStorage.getItem("user_avatar") || "https://i.pravatar.cc/80?img=1",
+        "x-user-avatar":
+          localStorage.getItem("user_avatar") ||
+          "https://i.pravatar.cc/80?img=1",
       },
     });
     return data as Post;

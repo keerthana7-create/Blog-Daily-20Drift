@@ -39,14 +39,28 @@ export default function PostCard({ post }: { post: Post }) {
         <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <span>By {post.authorName}</span>
           <div className="flex items-center gap-3">
-            <button onClick={() => dispatch(toggleLike(post.id))} className={`rounded-full border px-2 py-1 ${post.likes?.includes(me) ? "bg-primary text-primary-foreground" : ""}`} aria-label="Like">❤ {post.likes?.length ?? 0}</button>
-            <button onClick={() => dispatch(toggleBookmark(post.id))} className={`rounded-full border px-2 py-1 ${post.bookmarks?.includes(me) ? "bg-primary text-primary-foreground" : ""}`} aria-label="Bookmark">🔖 {post.bookmarks?.length ?? 0}</button>
+            <button
+              onClick={() => dispatch(toggleLike(post.id))}
+              className={`rounded-full border px-2 py-1 ${post.likes?.includes(me) ? "bg-primary text-primary-foreground" : ""}`}
+              aria-label="Like"
+            >
+              ❤ {post.likes?.length ?? 0}
+            </button>
+            <button
+              onClick={() => dispatch(toggleBookmark(post.id))}
+              className={`rounded-full border px-2 py-1 ${post.bookmarks?.includes(me) ? "bg-primary text-primary-foreground" : ""}`}
+              aria-label="Bookmark"
+            >
+              🔖 {post.bookmarks?.length ?? 0}
+            </button>
             <time dateTime={post.createdAt}>{date}</time>
           </div>
         </div>
         {post.authorId === me && (
           <div className="mt-3">
-            <Link to={`/editor/${post.id}`} className="text-xs underline">Edit</Link>
+            <Link to={`/editor/${post.id}`} className="text-xs underline">
+              Edit
+            </Link>
           </div>
         )}
       </div>

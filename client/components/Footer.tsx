@@ -15,8 +15,12 @@ export default function Footer() {
           <a className="hover:text-foreground" href="/contact">
             Contact
           </a>
-          <a className="hover:text-foreground" href="/login">Login</a>
-          <a className="hover:text-foreground" href="/register">Register</a>
+          <a className="hover:text-foreground" href="/login">
+            Login
+          </a>
+          <a className="hover:text-foreground" href="/register">
+            Register
+          </a>
         </nav>
       </div>
     </footer>

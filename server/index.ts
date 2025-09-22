@@ -15,7 +15,13 @@ import {
   getTags,
   subscribe,
 } from "./routes/posts";
-import { register as authRegister, login as authLogin, refresh as authRefresh, logout as authLogout, me as authMe } from "./routes/auth";
+import {
+  register as authRegister,
+  login as authLogin,
+  refresh as authRefresh,
+  logout as authLogout,
+  me as authMe,
+} from "./routes/auth";
 
 export function createServer() {
   const app = express();

@@ -25,7 +25,8 @@ export default function Login() {
     localStorage.setItem("user_id", payload.id);
     localStorage.setItem("user_name", payload.name);
     localStorage.setItem("user_email", payload.email);
-    if (payload.avatarUrl) localStorage.setItem("user_avatar", payload.avatarUrl);
+    if (payload.avatarUrl)
+      localStorage.setItem("user_avatar", payload.avatarUrl);
     navigate("/");
   };
 
@@ -35,10 +36,24 @@ export default function Login() {
       <main className="container mx-auto px-4 py-10 flex-1 max-w-md">
         <h1 className="text-3xl font-extrabold tracking-tight">Login</h1>
         <form onSubmit={onSubmit} className="mt-6 grid gap-4">
-          <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" className="rounded-md border px-3 py-2" />
-          <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" className="rounded-md border px-3 py-2" />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="rounded-md border px-3 py-2"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="rounded-md border px-3 py-2"
+          />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button className="rounded-md bg-primary text-primary-foreground px-4 py-2">Sign in</button>
+          <button className="rounded-md bg-primary text-primary-foreground px-4 py-2">
+            Sign in
+          </button>
         </form>
       </main>
       <Footer />
