@@ -11,8 +11,11 @@ import PostDetail from "./pages/PostDetail";
 import Editor from "./pages/Editor";
 import Profile from "./pages/Profile";
 import Categories from "./pages/Categories";
+import Bookmarks from "./pages/Bookmarks";
 import Contact from "./pages/Contact";
 import Subscribe from "./pages/Subscribe";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "./features/auth/authSlice";
@@ -32,8 +35,11 @@ function Bootstrap() {
       <Route path="/editor/:id" element={<Editor />} />
       <Route path="/profile/:id" element={<Profile />} />
       <Route path="/categories" element={<Categories />} />
-      <Route path="/contact" element={<Contact />} />
+      <Route path="/bookmarks" element={<Bookmarks />} />
       <Route path="/subscribe" element={<Subscribe />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
