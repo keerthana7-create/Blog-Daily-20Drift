@@ -15,6 +15,7 @@ import {
   getTags,
   subscribe,
 } from "./routes/posts";
+import { register as authRegister, login as authLogin, refresh as authRefresh, logout as authLogout, me as authMe } from "./routes/auth";
 
 export function createServer() {
   const app = express();
@@ -31,6 +32,13 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Auth API (mock)
+  app.post("/api/auth/register", authRegister);
+  app.post("/api/auth/login", authLogin);
+  app.post("/api/auth/refresh", authRefresh);
+  app.post("/api/auth/logout", authLogout);
+  app.get("/api/auth/me", authMe);
 
   // Blog API
   app.get("/api/posts", listPosts);
