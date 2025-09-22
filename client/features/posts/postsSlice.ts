@@ -85,7 +85,11 @@ export const createPost = createAsyncThunk(
   "posts/createPost",
   async (payload: UpsertPostPayload) => {
     const { data } = await api.post("/posts", payload, {
-      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+      headers: {
+        "x-user-id": localStorage.getItem("user_id") || "u1",
+        "x-user-name": localStorage.getItem("user_name") || "Alex Rivera",
+        "x-user-avatar": localStorage.getItem("user_avatar") || "https://i.pravatar.cc/80?img=1",
+      },
     });
     return data as Post;
   },
@@ -96,7 +100,10 @@ export const updatePost = createAsyncThunk(
   async (payload: UpsertPostPayload & { id: string }) => {
     const { id, ...body } = payload;
     const { data } = await api.put(`/posts/${id}`, body, {
-      headers: { "x-user-id": localStorage.getItem("user_id") || "u1" },
+      headers: {
+        "x-user-id": localStorage.getItem("user_id") || "u1",
+        "x-user-name": localStorage.getItem("user_name") || "Alex Rivera",
+      },
     });
     return data as Post;
   },
