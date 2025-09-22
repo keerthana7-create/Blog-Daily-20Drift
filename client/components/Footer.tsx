@@ -12,9 +12,11 @@ export default function Footer() {
           <a className="hover:text-foreground" href="#">
             Terms
           </a>
-          <a className="hover:text-foreground" href="#">
+          <a className="hover:text-foreground" href="/contact">
             Contact
           </a>
+          <a className="hover:text-foreground" href="/login">Login</a>
+          <a className="hover:text-foreground" href="/register">Register</a>
         </nav>
       </div>
     </footer>
