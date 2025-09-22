@@ -202,7 +202,7 @@ export const subscribe: RequestHandler = (req, res) => {
 
 export const createPost: RequestHandler = (req, res) => {
   const userId = currentUserId(req);
-  const author = authors.find((a) => a.id === userId) || authors[0];
+  const userName = (req.headers["x-user-name"] as string) || (authors.find((a) => a.id === userId)?.name ?? "User");
   const { title, content, tags, imageUrl, state } = req.body || {};
   if (!title || !content)
     return res.status(400).json({ message: "title and content required" });
@@ -221,11 +221,14 @@ export const createPost: RequestHandler = (req, res) => {
             .filter(Boolean)
         : [],
     imageUrl,
-    authorId: author.id,
-    authorName: author.name,
+    authorId: userId,
+    authorName: userName,
     createdAt: now,
     updatedAt: now,
     state: state === "draft" ? "draft" : "published",
+    likes: [],
+    bookmarks: [],
+    comments: [],
   };
   DB.posts.unshift(post);
   res.status(201).json(post);
