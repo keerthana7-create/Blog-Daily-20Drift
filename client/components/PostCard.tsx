@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom";
-import { Post } from "@/features/posts/postsSlice";
+import { Post, toggleLike, toggleBookmark } from "@/features/posts/postsSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
 
 export default function PostCard({ post }: { post: Post }) {
+  const dispatch = useDispatch<AppDispatch>();
   const date = new Date(post.createdAt).toLocaleDateString();
   const excerpt =
     post.content.replace(/<[^>]+>/g, "").slice(0, 160) +
     (post.content.length > 160 ? "…" : "");
+  const me = localStorage.getItem("user_id") || "u1";
 
   return (
     <article className="group overflow-hidden rounded-xl border bg-card shadow-sm transition hover:shadow-md">
@@ -35,11 +39,16 @@ export default function PostCard({ post }: { post: Post }) {
         <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <span>By {post.authorName}</span>
           <div className="flex items-center gap-3">
-            <span aria-label="likes">❤ {post.likes?.length ?? 0}</span>
-            <span aria-label="bookmarks">🔖 {post.bookmarks?.length ?? 0}</span>
+            <button onClick={() => dispatch(toggleLike(post.id))} className={`rounded-full border px-2 py-1 ${post.likes?.includes(me) ? "bg-primary text-primary-foreground" : ""}`} aria-label="Like">❤ {post.likes?.length ?? 0}</button>
+            <button onClick={() => dispatch(toggleBookmark(post.id))} className={`rounded-full border px-2 py-1 ${post.bookmarks?.includes(me) ? "bg-primary text-primary-foreground" : ""}`} aria-label="Bookmark">🔖 {post.bookmarks?.length ?? 0}</button>
             <time dateTime={post.createdAt}>{date}</time>
           </div>
         </div>
+        {post.authorId === me && (
+          <div className="mt-3">
+            <Link to={`/editor/${post.id}`} className="text-xs underline">Edit</Link>
+          </div>
+        )}
       </div>
     </article>
   );
