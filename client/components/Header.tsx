@@ -35,10 +35,12 @@ export default function Header() {
           Blog-Daily Drift
         </Link>
         <nav className="hidden md:flex items-center gap-4 text-sm">
-          <Link to="/">Home</Link>
-          <Link to="/categories">Categories</Link>
-          <Link to="/subscribe">Subscribe</Link>
-          <Link to="/contact">Contact</Link>
+          <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/categories" className="hover:underline">Categories</Link>
+          <Link to="/bookmarks" className="hover:underline">Bookmarked</Link>
+          <Link to={`/profile/${localStorage.getItem("user_id") || "u1"}`} className="hover:underline">My Profile</Link>
+          <Link to="/subscribe" className="hover:underline">Subscribe</Link>
+          <Link to="/contact" className="hover:underline">Contact</Link>
         </nav>
         <form
           onSubmit={onSubmit}
@@ -62,13 +64,23 @@ export default function Header() {
           >
             New Post
           </Link>
-          <Link
-            to={`/profile/${localStorage.getItem("user_id") || "u1"}`}
-            className="hidden sm:inline-flex rounded-full border px-3 py-2 text-sm"
-          >
-            My Profile
-          </Link>
           <ThemeToggle />
+          <div className="md:hidden">
+            <details>
+              <summary className="list-none cursor-pointer rounded-md border px-3 py-2 text-sm">Menu</summary>
+              <div className="absolute right-4 mt-2 w-56 rounded-md border bg-background p-2 shadow-md flex flex-col gap-1 text-sm">
+                <Link to="/" className="px-2 py-1 rounded hover:bg-accent">Home</Link>
+                <Link to="/categories" className="px-2 py-1 rounded hover:bg-accent">Categories</Link>
+                <Link to="/bookmarks" className="px-2 py-1 rounded hover:bg-accent">Bookmarked</Link>
+                <Link to={`/profile/${localStorage.getItem("user_id") || "u1"}`} className="px-2 py-1 rounded hover:bg-accent">My Profile</Link>
+                <Link to="/subscribe" className="px-2 py-1 rounded hover:bg-accent">Subscribe</Link>
+                <Link to="/contact" className="px-2 py-1 rounded hover:bg-accent">Contact</Link>
+                <Link to="/editor" className="px-2 py-1 rounded hover:bg-accent">New Post</Link>
+                <Link to="/login" className="px-2 py-1 rounded hover:bg-accent">Login</Link>
+                <Link to="/register" className="px-2 py-1 rounded hover:bg-accent">Register</Link>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
     </header>
